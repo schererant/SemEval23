@@ -1,6 +1,13 @@
 # SemEval23
 SemEval 2023 Task 4. ValueEval: Identification of Human Values behind Arguments
 
+# Get started
+## Download the data
+
+## Setup the environment
+
+## Run the code
+
 
 # Task
 Given a textual argument and a human value category, classify whether or not the argument draws on that category. This task uses a set of 20 value categories compiled from the social science literature and described in our ACL paper. Participants can submit runs (also known as approaches or systems) that detect one, a subset, or all of these values in arguments. Arguments are given as premise text, conclusion text, and binary stance of the premise to the conclusion ("in favor of" or "against").
