@@ -1,6 +1,10 @@
 # SemEval23
 SemEval 2023 Task 4. ValueEval: Identification of Human Values behind Arguments
 
+# Report  
+For the report, an Overleaf project has been created with the provided template:  
+https://www.overleaf.com/6797958162jgjxzkwrsfkr  
+
 # Get started
 ### Download the data
 
