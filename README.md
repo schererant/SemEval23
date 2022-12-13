@@ -69,21 +69,19 @@ Data is provided as tab-separated values files with one header line. Stay up-to-
 
 The arguments-training/validation/test.tsv files contain one argument per line: its unique argument ID, the conclusion, the premise's stance towards the conclusion, and the premise itself. Example with tab-separated columns highlighted:
 
-`
-> Argument ID	Conclusion	Stance	Premise
-> A01010	We should prohibit school prayer	against	it should be allowed if the student wants to pray as long as it is not interfering with his classes
-> A01011	We should abolish the three-strikes laws	in favor of	three strike laws can cause young people to be put away for life without a chance to straight out their life
-> A01012	The use of public defenders should be mandatory	in favor of	the use of public defenders should be mandatory because some people don't have money for a lawyer and this would help those that don't
-`
+    Argument ID	Conclusion	Stance	Premise
+    A01010	We should prohibit school prayer	against	it should be allowed if the student wants to pray as long as it is not interfering with his classes
+    A01011	We should abolish the three-strikes laws	in favor of	three strike laws can cause young people to be put away for life without a chance to straight out their life
+    A01012	The use of public defenders should be mandatory	in favor of	the use of public defenders should be mandatory because some people don't have money for a lawyer and this would help those that don't
+
 
 The labels-training/validation/test.tsv files also contain one argument per line: its unique argument ID and one column for each of the 20 value categories with a 1 meaning that the argument resorts to the value category and a 0 that not. Example with tab-separated columns highlighted:
 
-`
-Argument ID	Self-direction: thought	Self-direction: action	Stimulation	Hedonism	Achievement	Power: dominance	Power: resources	Face	Security: personal	Security: societal	Tradition	Conformity: rules	Conformity: interpersonal	Humility	Benevolence: caring	Benevolence: dependability	Universalism: concern	Universalism: nature	Universalism: tolerance	Universalism: objectivity
-A01010	1	1	0	0	0	0	0	0	0	0	1	0	0	0	0	0	1	0	0	0
-A01011	0	0	0	0	1	0	0	1	0	0	0	0	0	0	1	0	0	0	1	1
-A01012	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0
-`
+    Argument ID	Self-direction: thought	Self-direction: action	Stimulation	Hedonism	Achievement	Power: dominance	Power: resources	Face	Security: personal	Security: societal	Tradition	Conformity: rules	Conformity: interpersonal	Humility	Benevolence: caring	Benevolence: dependability	Universalism: concern	Universalism: nature	Universalism: tolerance	Universalism: objectivity
+    A01010	1	1	0	0	0	0	0	0	0	0	1	0	0	0	0	0	1	0	0	0
+    A01011	0	0	0	0	1	0	0	1	0	0	0	0	0	0	1	0	0	0	1	1
+    A01012	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0
+
 
 ## Evaluation
 
