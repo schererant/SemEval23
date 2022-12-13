@@ -30,6 +30,10 @@ A01012	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0
 
 Runs are evaluated on the basis of F1-score, Precision, and Recall in TIRA: averaged over all value categories and for each category individually. For the shared task leaderboard, the runs are ranked according to the averaged F1-score on the "arguments-test" dataset, corresponding to the arguments-test.tsv of the dataset.
 
+# Report  
+For the report, an Overleaf project has been created with the provided template:  
+https://www.overleaf.com/6797958162jgjxzkwrsfkr  
+
 # Submission
 
 This task uses TIRA for submissions, which allows for both run file upload and Docker image submission. The latter allows for excellent reproducibility of your run. Registered teams will receive links to register with TIRA up to one work day after registration.
