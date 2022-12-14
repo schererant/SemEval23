@@ -14,14 +14,14 @@ class MissingColumnError(AttributeError):
 
 def load_json_file(filepath):
     """Load content of json-file from `filepath`"""
-    with open(filepath, 'r') as  json_file:
+    with open(filepath, 'r') as json_file:
         return json.load(json_file)
 
 
 def load_values_from_json(filepath):
     """Load values per level from json-file from `filepath`"""
     json_values = load_json_file(filepath)
-    values = { "1":set(), "2":set(), "3":set(), "4a":set(), "4b":set() }
+    values = { "1": set(), "2": set(), "3": set(), "4a": set(), "4b": set()}
     for value in json_values["values"]:
         values["1"].add(value["name"])
         values["2"].add(value["level2"])
