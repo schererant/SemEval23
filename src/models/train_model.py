@@ -29,8 +29,7 @@ data = ...
 # If we decide to truncate our data, we have to think about which strings will be truncated, 
 # I imagine we shouldn't truncate the stance for example as I imagine it to be pretty crucial for sentiment analysis
 
-# Extract num_labels from data
-num_labels = ...
+num_labels = 20
     
 tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_fast=True)
 
