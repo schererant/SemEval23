@@ -106,3 +106,9 @@ def load_labels_from_tsv(filepath, label_order):
         raise
     except KeyError:
         raise MissingColumnError('The file "%s" does not contain the required columns for its level.' % filepath)
+
+
+def merge_arg_label(df_arguments, df_labels):
+    """Combines two dataframes based on the variable Argument ID
+    """
+    return pd.merge(df_arguments, df_labels, on= "Argument ID")
