@@ -34,16 +34,13 @@ NB_pipeline = Pipeline([
             ])
 
 
-def train_accuracy(labelorder, df_merged):
+def train_accuracy(labelorder, df_merged_train, df_merged_validation):
     for label in list(labelorder.keys()):
         print('... Processing {}'.format(label))
-        NB_pipeline.fit(df_merged["Premise"], df_merged[label])
-        prediction = NB_pipeline.predict(df_merged["Premise"])
-        print('Accuracy is {}'.format(accuracy_score(df_merged[label], prediction)))
+        NB_pipeline.fit(df_merged_train["Premise"], df_merged_train[label])
+        prediction = NB_pipeline.predict(df_merged_validation["Premise"])
+        print('Accuracy is {}'.format(accuracy_score(df_merged_validation[label], prediction)))
 
 
 label_order = md.load_json_file(filepath_labelorder)
-print("Train")
-train_accuracy(label_order, df_merged_train)
-print("Validation")
-train_accuracy(label_order, df_merged_validation)
+train_accuracy(label_order, df_merged_train, df_merged_validation)
