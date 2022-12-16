@@ -44,11 +44,18 @@ def word_cloud(dataframe, set, saveto=None):
 
     for row in dataframe['Conclusion']:
         words.append(row)
-    
-    words = (" ").join(words)
-    print(f"Plot {set} wordcloud for {len(words)} words")
 
-    cloud = WordCloud().generate(words)
+    words_string = (" ").join(words)
+    words_list = words_string.split()
+
+    n = 10
+    print(f"{n} Most frequent words in {set} data:")
+    word_frame = pd.DataFrame({"words": words_list})
+    print(word_frame.value_counts().index.tolist()[:n])
+
+    print(f"Plot {set} data wordcloud for {len(words_list)} words")
+
+    cloud = WordCloud().generate(words_string)
     
     plt.imshow(cloud, interpolation='bilinear')
     plt.axis("off")
