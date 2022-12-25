@@ -1,0 +1,9 @@
+   Total values: 5393
+   in favor of: 2898 (53.7%)
+   against: 2495 (46.3%)
+10 Most frequent words in train data (in favor of):
+[('the',), ('to',), ('and',), ('of',), ('is',), ('a',), ('be',), ('should',), ('in',), ('are',)]
+Plot train data wordcloud for 64786 words
+10 Most frequent words in train data (against):
+[('the',), ('to',), ('and',), ('of',), ('a',), ('is',), ('be',), ('should',), ('in',), ('for',)]
+Plot train data wordcloud for 116298 words
