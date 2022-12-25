@@ -51,7 +51,7 @@ def word_cloud(dataframe, set, saveto=None):
     n = 10
     print(f"{n} Most frequent words in {set} data:")
     word_frame = pd.DataFrame({"words": words_list})
-    print(word_frame.value_counts().index.tolist()[:n])
+    print("   ", list(zip(*word_frame.value_counts().index.tolist()[:n]))[0])
 
     print(f"Plot {set} data wordcloud for {len(words_list)} words")
 

@@ -10,8 +10,8 @@ Val frame
 Plot histogram of word lengths...
 Plot word clouds...
 10 Most frequent words in train data:
-[('should',), ('We',), ('ban',), ('the',), ('of',), ('abolish',), ('adopt',), ('subsidize',), ('legalize',), ('a',)]
+('should', 'We', 'ban', 'the', 'of', 'abolish', 'adopt', 'subsidize', 'legalize', 'a')
 Plot train data wordcloud for 34316 words
 10 Most frequent words in validation data:
-[('should',), ('be',), ('We',), ('good',), ('more',), ('than',), ('harm',), ('of',), ('banned',), ('brings',)]
+('should', 'be', 'We', 'good', 'more', 'than', 'harm', 'of', 'banned', 'brings')
 Plot validation data wordcloud for 12505 words
