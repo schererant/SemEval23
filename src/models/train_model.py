@@ -4,6 +4,7 @@ from src.models.bert import *
 from src.data.format_dataset import combine_columns, split_arguments
 
 VALIDATE = False
+SMALL_TRAIN = True
 
 
 def main():
@@ -35,6 +36,9 @@ def main():
         #                                          values[levels[i]], test_dataframe=df_valid_all[i])
         print("F1-Scores:")
         # print(bert_model_evaluation['eval_f1-score'])
+    elif SMALL_TRAIN:
+        # use first 10 rows for training
+        train_bert_model(train_arguments[:10], 'models/bert_small', list(json_values.keys()))
     else:
         train_bert_model(train_arguments, 'models/bert_train', list(json_values.keys()))
 

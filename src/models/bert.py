@@ -221,7 +221,9 @@ def train_bert_model(train_dataframe, model_dir, labels, test_dataframe=None, nu
     model.save_pretrained(model_dir)
 
     if test_dataframe is not None:
-        return multi_trainer.evaluate()
+        print("Evaluating model")
+        print(multi_trainer.evaluate())
+
 
 # class DestilBert:
 #     def __init__(self,
