@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 from matplotlib import pyplot as plt
 from wordcloud import WordCloud
-from statistics import mean, stdev
+from statistics import mean, stdev, median
 
 
 def stance_distribution(dataframe):
@@ -15,24 +15,28 @@ def stance_distribution(dataframe):
         print(f"   {key}: {vals[key]} ({vals[key]/n_rows*100:.1f}%)")
 
 
-def word_counts(dataframe, column, set, saveto=None):
+def word_counts(dataframe, set, saveto=None):
     words = lambda s: len(s.split())
 
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig, (ax1, ax2) = plt.subplots(2, 1)
 
-    fig.set_figheight(6)
-    fig.set_figwidth(9)
-
-    t = dataframe[column].map(words)
+    fig.set_figheight(8)
+    fig.set_figwidth(7)
+    
+    t = dataframe['Conclusion'].map(words)
+    
+    ax1.text(20, 3500, f"Median: {median(t)} words\nper conclusion", bbox=dict(facecolor='none', edgecolor='red'))
+    
     ax1.hist(t, bins=10)
-    ax1.set_title(set + ' conclusion word counts')
-    ax1.set_xlabel('number of words')
+    ax1.set_title(f'Word counts: conclusion {set} set')
     ax1.set_ylabel('occurances')
     
     t = dataframe['Premise'].map(words)
+    ax2.text(68, 2120, f"Median: {median(t)} words\nper premise", bbox=dict(facecolor='none', edgecolor='red'))
     ax2.hist(t, bins=10)
-    ax2.set_title(set + ' premise word counts')
+    ax2.set_title(f'Word counts: premise {set} set')
     ax2.set_xlabel('number of words')
+    ax2.set_ylabel('occurances')
     
     plt.show()
 
@@ -100,10 +104,9 @@ if __name__ == '__main__':
     value_categories = md.load_json_file(data_dir_raw/'value-categories.json')
     train_labels = md.load_labels_from_tsv(data_dir_raw/'labels-training.tsv', list(value_categories.keys()))
 
-    label_distribution(train_labels, saveto=report_dir/'label_distribution_train.png')
-    stance_distribution(train_frame)
+    #label_distribution(train_labels, saveto=report_dir/'label_distribution_train.png')
+    #stance_distribution(train_frame)
 
-    word_counts(train_frame, 'Conclusion', 'train', saveto=report_dir/'wordlength_conclusion_train.png')
-    word_counts(train_frame, 'Premise', 'train', saveto=report_dir/'wordlength_premise_train.png')
+    word_counts(train_frame, 'train', saveto=report_dir/'wordlength_conclusion_premise_train.png')
 
-    word_cloud(train_frame, 'Premise', 'train', saveto=report_dir/'wordcloud_premise_train.png')
+    #word_cloud(train_frame, 'Premise', 'train', saveto=report_dir/'wordcloud_premise_train.png')
