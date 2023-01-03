@@ -33,3 +33,10 @@ def create_dataframe_head(argument_ids, model_name):
     df_model_head['Method'] = [model_name] * len(argument_ids)
 
     return df_model_head
+
+def drop_column(df_arguments, col_name):
+    if col_name in df_arguments.columns:
+        return df_arguments.drop(['Usage'], axis=1).reset_index(drop=True)
+    else:
+        print(f"Could not find {col_name} in dataframe to drop")
+        return df_arguments
