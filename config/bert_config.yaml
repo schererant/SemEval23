@@ -1,0 +1,28 @@
+dataset:
+  arguments:
+    train: data/processed/arguments-training_unify_stance.tsv
+    test: data/processed/arguments-test_unify_stance.tsv
+    val: data/processed/arguments-validation_unify_stance.tsv
+  labels:
+    train: data/raw/labels-training.tsv
+    test: data/raw/labels-test.tsv
+    val: data/raw/labels-validation.tsv
+model:
+  name: 'bert'
+  directory: 'models/bert_train'
+optimizer:
+  lr: 0.00002
+  scheduler_type: linear
+train:
+  use_mini_dataset: True
+  batch_size: 100
+  epochs: 100
+  weight_decay: 0.01
+  save_strategy: steps
+  save_steps: 20
+  seed: 42
+evaluate:
+  reload_best_model_weights: True
+  strategy: steps
+  eval_steps: 10
+  metric: marco-avg-f1score
