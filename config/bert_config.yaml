@@ -25,4 +25,5 @@ evaluate:
   reload_best_model_weights: True
   strategy: steps
   eval_steps: 10
+  batch_size: 1000
   metric: marco-avg-f1score

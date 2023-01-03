@@ -6,6 +6,7 @@ from transformers import (AutoTokenizer, AutoModelForSequenceClassification,
 from datasets import (Dataset, DatasetDict, load_dataset)
 import utils
 import models.predict_model as predict_model
+from models.model_interface import ModelInterface
 
 """
 The folllwoing code is taken from https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/main/src/python/components/models/bert.py
@@ -30,7 +31,7 @@ class MultiLabelTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-class BertModel:
+class BertModel(ModelInterface):
     def __init__(self, config) -> None:
         self.name = config['model']['name']
 
@@ -38,7 +39,7 @@ class BertModel:
 
         self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
-        self.args = TrainingArguments(
+        self.train_args = TrainingArguments(
                 output_dir=self.model_dir,
                 evaluation_strategy=config['evaluate']['strategy'],
                 eval_steps=config['evaluate']['eval_steps'],
@@ -54,6 +55,14 @@ class BertModel:
                 seed=config['train']['seed'],
                 lr_scheduler_type=config['optimizer']['scheduler_type']
             )
+
+        self.predict_args = TrainingArguments(
+            output_dir=self.model_dir,
+            do_train=False,
+            do_eval=False,
+            do_predict=True,
+            per_device_eval_batch_size=config['evaluate']['batch_size']
+        )
 
     def train(self, train_dataframe, labels, test_dataframe=None):
         """
@@ -86,7 +95,7 @@ class BertModel:
 
         self.multi_trainer = MultiLabelTrainer(
             model,
-            self.args,
+            self.train_args,
             train_dataset=ds["train"],
             eval_dataset=ds["test"],
             compute_metrics=lambda x: predict_model.compute_metrics(x, labels),
@@ -160,20 +169,11 @@ class BertModel:
         num_labels = len(labels)
         ds = ds.remove_columns(['labels'])
 
-        batch_size = 8
-        args = TrainingArguments(
-            output_dir=model_dir,
-            do_train=False,
-            do_eval=False,
-            do_predict=True,
-            per_device_eval_batch_size=batch_size
-        )
-
         model = utils.load_model_from_data_dir(model_dir, num_labels=num_labels)
 
         multi_trainer = MultiLabelTrainer(
             model,
-            args,
+            self.predict_args,
             tokenizer=self.tokenizer
         )
 
@@ -216,11 +216,13 @@ class BertModel:
                                         c not in ['Argument ID', 'Conclusion', 'Stance', 'Premise', 'Part']]})
 
         cols = ds['train'].column_names
+
         cols.remove('labels')
 
         ds_enc = ds.map(self.tokenize_and_encode, batched=True, remove_columns=cols)
-
+        
         cols.remove('Premise')
+        
         return ds_enc, cols
 
 

@@ -22,7 +22,7 @@ def eval(model):
         print(f"   {key}\t{bert_model_evaluation['eval_f1-score'][key]}")
 
 
-def get_model(config: dict):
+def get_model(config: dict)->ModelInterface:
     model_name = config['model']['name'].lower()
     if model_name == 'bert':
         return BertModel(config)
