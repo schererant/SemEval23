@@ -53,18 +53,17 @@ def main():
 
     # join arguments and labels
     df_training   = format_dataset.combine_columns(df_arguments_training, df_labels_training)
-    df_validation = format_dataset.combine_columns(df_arguments_validation, df_labels_validation)
+    df_validation_test = format_dataset.combine_columns(df_arguments_validation, df_labels_validation)
     # df_test = format_dataset.combine_columns(df_arguments_test, df_labels_test)
 
     # drop usage column
     df_training   = format_dataset.drop_column(df_training, 'Usage')
-    df_validation = format_dataset.drop_column(df_validation, 'Usage')
+    df_validation_test = format_dataset.drop_column(df_validation_test, 'Usage')
     # df_test = format_dataset.drop_column(df_test, 'Usage')
 
     # split validation frame into validation and test frame
-    split_index = int(df_validation.shape[0] * 0.7)
-    df_validation = df_validation.iloc[:, :split_index]
-    df_test = df_validation.iloc[:, split_index:]
+    df_validation = df_validation_test.sample(frac=0.67)
+    df_test       = df_validation_test.drop(df_validation.index)
 
     ### Choose model, throws AttributeError if the model name in the config is invalid ###
     model = train_model.get_model(config)
@@ -76,7 +75,7 @@ def main():
         train_model.eval(model)
     
     # TODO: make prediction method work properly
-    # model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+    model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
 
     # Report
 
