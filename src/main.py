@@ -4,7 +4,10 @@ import data.make_dataset as make_dataset
 import data.format_dataset as format_dataset
 import src.models.train_model as train_model
 import src.models.predict_model as predict_model
+from numpy import arange
+import numpy as np
 import utils
+
 
 def setup_parser():
 
@@ -71,11 +74,31 @@ def main():
     ### train model ###
     # use --retrain flag to run training again, otherwise the last run from the model dir (as specified in config file) is used
     if args.retrain:
+        print('Train model...')
         train_model.train(model, config, df_training, list(labels_json.keys()), df_validation)
         train_model.eval(model)
+    else:
+        print('Skip training model, try to load model from model directory (use --retrain to start training again)')
+
+
+    print('Run prediction on validation set')
+    y_pred, y_true = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
     
-    # TODO: make prediction method work properly
-    model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+    print('Optimize threshold on validation data')
+    eval_metric = config['evaluate']['metric_th_opt'].split(':')
+
+    thresholds = list(arange(-1.0, 1.0, 0.01))
+    scores = [predict_model.scores(y_pred, y_true, tresh=t) for t in thresholds]
+    idx_opt, th_opt = utils.get_opt_th(scores, eval_metric)
+
+    # Evaluate on test set
+    print('Run prediction on test set')
+    y_pred, y_true = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+    print('Test model and threshold on test set')
+    y_pred = np.load('ypredtest.npy')
+    y_true = np.load('ytruetest.npy')
+
+    print("Test set results: ", " ".join(eval_metric), predict_model.scores(y_pred, y_true, tresh=thresholds[idx_opt])[eval_metric[0]][eval_metric[1]])
 
     # Report
 

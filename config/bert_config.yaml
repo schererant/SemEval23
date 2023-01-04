@@ -27,3 +27,4 @@ evaluate:
   eval_steps: 10
   batch_size: 1000
   metric: marco-avg-f1score
+  metric_th_opt: macro avg:f1-score

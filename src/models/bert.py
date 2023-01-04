@@ -165,8 +165,10 @@ class BertModel(ModelInterface):
         np.ndarray
             numpy nd-array with the predictions given by the model
         """
-        ds, no_labels = self.convert_to_dataset(dataframe, dataframe, labels)
+        ds, _ = self.convert_to_dataset(dataframe, dataframe, labels)
         num_labels = len(labels)
+
+        y_true = np.asarray(ds['train']['labels'])
         ds = ds.remove_columns(['labels'])
 
         model = utils.load_model_from_data_dir(model_dir, num_labels=num_labels)
@@ -177,9 +179,9 @@ class BertModel(ModelInterface):
             tokenizer=self.tokenizer
         )
 
-        prediction = 1 * (multi_trainer.predict(ds['train']).predictions > 0.5)
+        y_pred = multi_trainer.predict(ds['train']).predictions
 
-        return prediction
+        return y_pred, y_true
 
     def tokenize_and_encode(self, examples):
         """Tokenizes each arguments "Premise" """
