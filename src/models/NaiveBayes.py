@@ -10,8 +10,8 @@ import pandas as pd
 from model_interface import ModelInterface
 
 class NBModel(ModelInterface):
-    def __init__(self):
-        return
+    def __init__(self, config):
+        self.config = config
 
     def init_pipeline(self):
         """ Initialization pipeline with removing stop words and having a one vs rest classifier.
@@ -24,8 +24,8 @@ class NBModel(ModelInterface):
         ])
 
     def train(self, train_frame, label_columns):
-    """Defining a pipeline combining a text feature extractor with multi label classifier
-    """
+        """Defining a pipeline combining a text feature extractor with multi label classifier
+        """
         self.label_columns = label_columns
         self.NB_pipelines = {label_col: self.init_pipeline() for label_col in label_columns}
 
