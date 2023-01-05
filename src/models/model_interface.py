@@ -9,5 +9,5 @@ class ModelInterface():
     def evaluate(self):
         raise NotImplementedError("Interface class, override 'evaluate()' function in child class")
 
-    def optimize(self):
-        raise NotImplementedError("Interface class, override 'optimize()' function in child class")
+    def optimize(self, y_pred, y_true, eval_metric):
+        pass
