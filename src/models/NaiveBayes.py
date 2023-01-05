@@ -14,6 +14,8 @@ class NBModel(ModelInterface):
         return
 
     def init_pipeline(self):
+        """ Initialization pipeline with removing stop words and having a one vs rest classifier.
+        """
         stop_words = list(stopwords.words('english'))
         return Pipeline([
             ('tfidf', TfidfVectorizer(stop_words=stop_words)),
@@ -22,7 +24,8 @@ class NBModel(ModelInterface):
         ])
 
     def train(self, train_frame, label_columns):
-        # Define a pipeline combining a text feature extractor with multi lable classifier
+    """Defining a pipeline combining a text feature extractor with multi label classifier
+    """
         self.label_columns = label_columns
         self.NB_pipelines = {label_col: self.init_pipeline() for label_col in label_columns}
 
@@ -30,6 +33,7 @@ class NBModel(ModelInterface):
             self.NB_pipelines[label_col].fit(train_frame['Premise'], train_frame[label_col])
 
     def predict(self, dataframe):
+        """Predicting the labels"""
         preds = {}
 
         for col in self.label_columns:
@@ -40,6 +44,7 @@ class NBModel(ModelInterface):
         return pred_df
 
     def evaluate(self, data_frame):
+        """"Evaluating the labels, a small evaluation. A more elaborate evaluation can be found in the evaluation code. """
         pred_df = self.predict(data_frame)
         scores = {col: accuracy_score(pred_df[col], data_frame[col]) for col in self.label_columns}
 
