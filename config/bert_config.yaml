@@ -14,6 +14,7 @@ optimizer:
   lr: 0.00002
   scheduler_type: linear
 train:
+  always_retrain: False
   use_mini_dataset: True
   batch_size: 100
   epochs: 100
@@ -22,9 +23,10 @@ train:
   save_steps: 20
   seed: 42
 evaluate:
+  split_validation_set: True
   reload_best_model_weights: True
   strategy: steps
   eval_steps: 10
   batch_size: 1000
-  metric: marco-avg-f1score
-  metric_th_opt: macro avg:f1-score
+  metric: micro-avg-f1score
+  metric_th_opt: micro avg:f1-score

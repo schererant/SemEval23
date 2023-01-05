@@ -2,13 +2,15 @@ import torch
 import numpy as np
 from sklearn.metrics import f1_score, classification_report
 from matplotlib import pyplot as plt
+import math
+
 
 def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):
     """Compute label-wise and averaged F1-scores"""
     y_pred = torch.from_numpy(y_pred)
     y_true = torch.from_numpy(y_true)
     if sigmoid:
-        y_pred = y_pred.sigmoid()
+        y_pred = y_pred.sigmoid()   
 
     y_true = y_true.bool().numpy()
     y_pred = (y_pred > thresh).numpy()
@@ -22,7 +24,13 @@ def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):
     return f1_scores
 
 
-def scores(y_pred, y_true, tresh):
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def scores(y_pred, y_true, tresh, use_sigmoid=True):
+    if use_sigmoid:
+        y_pred = sigmoid(y_pred)
     return classification_report(y_true=y_true, y_pred=(y_pred >= tresh).astype(np.int64),
                                     output_dict=True, zero_division=0)
 

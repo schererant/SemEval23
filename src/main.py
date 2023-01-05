@@ -64,48 +64,58 @@ def main():
     df_validation_test = format_dataset.drop_column(df_validation_test, 'Usage')
     # df_test = format_dataset.drop_column(df_test, 'Usage')
 
-    # split validation frame into validation and test frame
-    df_validation = df_validation_test.sample(frac=0.67)
-    df_test       = df_validation_test.drop(df_validation.index)
+    if config['evaluate']['split_validation_set']:
+        # split validation frame into validation and test frame
+        df_validation = df_validation_test.sample(frac=0.67)
+        df_test       = df_validation_test.drop(df_validation.index)
+    else:
+        # do not use validation set for parameter tuning
+        df_test = df_validation_test
+        df_validation = None
 
     ### Choose model, throws AttributeError if the model name in the config is invalid ###
     model = train_model.get_model(config)
     
     ### train model ###
-    # use --retrain flag to run training again, otherwise the last run from the model dir (as specified in config file) is used
-    if args.retrain:
+    # use --retrain flag to run training again
+    # otherwise the last trained model from the model-directory (as specified in config file) is used
+    # due to fast training time, the NaiveBayes model is not saved, and thus is always retrained
+    if args.retrain or config['train']['always_retrain']:
         print('Train model...')
-        train_model.train(model, config, df_training, list(labels_json.keys()), df_validation)
-        train_model.eval(model)
+        model.train(model, config, df_training, list(labels_json.keys()), df_validation)
+        model.evaluate(model)
     else:
-        print('Skip training model, try to load model from model directory (use --retrain to start training again)')
+        print('Skip training model (use --retrain to start model training again)')
+    if False:
+        y_pred_train, y_true_train = model.predict(df_training, config['model']['directory'], list(labels_json.keys()))
+        np.save('ytruetrain', y_true_train)
+        np.save('ypredtrain', y_pred_train)
 
+        y_pred_val, y_true_val = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
+        np.save('ytrueval', y_true_val)
+        np.save('ypredval', y_pred_val)
+        
+        y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+        np.save('ytruetest', y_true_test)
+        np.save('ypredtest', y_pred_test)
 
-    print('Run prediction on validation set')
-    y_pred, y_true = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
-    
-    print('Optimize threshold on validation data')
     eval_metric = config['evaluate']['metric_th_opt'].split(':')
 
-    thresholds = list(arange(-1.0, 1.0, 0.01))
-    scores = [predict_model.scores(y_pred, y_true, tresh=t) for t in thresholds]
-    idx_opt, th_opt = utils.get_opt_th(scores, eval_metric)
+    y_true_train = np.load('ytruetrain.npy')
+    y_pred_train = np.load('ypredtrain.npy')
+
+    print('Run prediction on validation set')
+    y_true_val = np.load('ytrueval.npy')
+    y_pred_val = np.load('ypredval.npy')
+
+    model.optimize(y_pred_val, y_true_val, eval_metric)
 
     # Evaluate on test set
-    print('Run prediction on test set')
-    y_pred, y_true = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
-    print('Test model and threshold on test set')
-    y_pred = np.load('ypredtest.npy')
-    y_true = np.load('ytruetest.npy')
-
-    print("Test set results: ", " ".join(eval_metric), predict_model.scores(y_pred, y_true, tresh=thresholds[idx_opt])[eval_metric[0]][eval_metric[1]])
-
-    # Report
-
-    # Visualize
-
-    # Save
-
+    print('Run prediction on train and test set')
+    # y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+    y_true_test = np.load('ytruetest.npy')
+    y_pred_test = np.load('ypredtest.npy')
+    print("Test set results: ", " ".join(eval_metric), model.scores()[eval_metric[0]][eval_metric[1]])
 
 if __name__ == '__main__':
     main()

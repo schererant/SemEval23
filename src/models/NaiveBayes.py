@@ -23,7 +23,7 @@ class NBModel(ModelInterface):
                 fit_prior=True, class_prior=None))),
         ])
 
-    def train(self, train_frame, label_columns):
+    def train(self, train_frame, label_columns, test_frame=None):
         """Defining a pipeline combining a text feature extractor with multi label classifier
         """
         self.label_columns = label_columns
@@ -32,7 +32,7 @@ class NBModel(ModelInterface):
         for label_col in label_columns:
             self.NB_pipelines[label_col].fit(train_frame['Premise'], train_frame[label_col])
 
-    def predict(self, dataframe):
+    def predict(self, dataframe, model_dir, labels):
         """Predicting the labels"""
         preds = {}
 
@@ -43,8 +43,11 @@ class NBModel(ModelInterface):
 
         return pred_df
 
+    def optimize(self, y_pred, y_true, eval_metric):
+        pass
+
     def evaluate(self, data_frame):
-        """"Evaluating the labels, a small evaluation. A more elaborate evaluation can be found in the evaluation code. """
+        """"Evaluating the labels, a small evaluation. """
         pred_df = self.predict(data_frame)
         scores = {col: accuracy_score(pred_df[col], data_frame[col]) for col in self.label_columns}
 

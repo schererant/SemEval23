@@ -7,6 +7,8 @@ from datasets import (Dataset, DatasetDict, load_dataset)
 import utils
 import models.predict_model as predict_model
 from models.model_interface import ModelInterface
+from numpy import arange
+
 
 """
 The folllwoing code is taken from https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/main/src/python/components/models/bert.py
@@ -64,6 +66,8 @@ class BertModel(ModelInterface):
             per_device_eval_batch_size=config['evaluate']['batch_size']
         )
 
+        self.thresh_opt = 0.5
+
     def train(self, train_dataframe, labels, test_dataframe=None):
         """
         Trains Bert model with the arguments in `train_dataframe`
@@ -109,6 +113,13 @@ class BertModel(ModelInterface):
     def evaluate(self):
         print("Evaluating model")
         return self.multi_trainer.evaluate()
+
+    def optimize(self, y_pred_val, y_true_val, eval_metric):
+        print('Optimize threshold on validation data')
+        thresholds = list(arange(0, 1.0, 0.01))
+        scores = [predict_model.scores(y_pred_val, y_true_val, tresh=t) for t in thresholds]
+        idx_opt, max_score = utils.get_opt_th(scores, eval_metric)
+        self.thresh_opt = thresholds[idx_opt]
 
     def convert_to_dataset(self, train_dataframe, test_dataframe, labels):
         """

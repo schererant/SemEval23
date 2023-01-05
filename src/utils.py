@@ -22,6 +22,6 @@ def load_model_from_data_dir(model_dir, num_labels):
 
 
 def get_opt_th(scores, eval_metric):
-    max_th    = max(s[eval_metric[0]][eval_metric[1]] for s in scores)
-    max_index = [s[eval_metric[0]][eval_metric[1]] for s in scores].index(max_th)
-    return max_index, max_th
+    max_score = max(s[eval_metric[0]][eval_metric[1]] for s in scores)
+    max_index = [s[eval_metric[0]][eval_metric[1]] for s in scores].index(max_score)
+    return max_index, max_score
