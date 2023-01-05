@@ -83,28 +83,18 @@ def main():
     if args.retrain or config['train']['always_retrain']:
         print('Train model...')
         model.train(model, config, df_training, list(labels_json.keys()), df_validation)
-        model.evaluate(model)
+        scores = model.evaluate(model)
     else:
         print('Skip training model (use --retrain to start model training again)')
-    if False:
-        y_pred_train, y_true_train = model.predict(df_training, config['model']['directory'], list(labels_json.keys()))
-        np.save('ytruetrain', y_true_train)
-        np.save('ypredtrain', y_pred_train)
-
-        y_pred_val, y_true_val = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
-        np.save('ytrueval', y_true_val)
-        np.save('ypredval', y_pred_val)
-        
-        y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
-        np.save('ytruetest', y_true_test)
-        np.save('ypredtest', y_pred_test)
 
     eval_metric = config['evaluate']['metric_th_opt'].split(':')
 
+    #y_pred_train, y_true_train = model.predict(df_training, config['model']['directory'], list(labels_json.keys()))
     y_true_train = np.load('ytruetrain.npy')
     y_pred_train = np.load('ypredtrain.npy')
 
     print('Run prediction on validation set')
+    #y_pred_val, y_true_val = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
     y_true_val = np.load('ytrueval.npy')
     y_pred_val = np.load('ypredval.npy')
 
@@ -112,8 +102,7 @@ def main():
 
     # Evaluate on test set
     print('Run prediction on train and test set')
-    # y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
-    y_true_test = np.load('ytruetest.npy')
+    #y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
     y_pred_test = np.load('ypredtest.npy')
     print("Test set results: ", " ".join(eval_metric), model.scores()[eval_metric[0]][eval_metric[1]])
 
