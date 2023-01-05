@@ -7,8 +7,9 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
+from model_interface import ModelInterface
 
-class NBModel():
+class NBModel(ModelInterface):
     def __init__(self):
         return
 
