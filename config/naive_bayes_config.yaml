@@ -1,0 +1,15 @@
+dataset:
+  arguments:
+    train: data/processed/arguments-training_unify_stance.tsv
+    test: data/processed/arguments-test_unify_stance.tsv
+    val: data/processed/arguments-validation_unify_stance.tsv
+  labels:
+    train: data/raw/labels-training.tsv
+    test: data/raw/labels-test.tsv
+    val: data/raw/labels-validation.tsv
+model:
+  name: 'naive_bayes'
+  directory: 'models/naive_bayes'
+  seed: 42
+evaluate:
+  metric: marco-avg-f1score
