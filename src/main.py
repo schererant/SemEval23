@@ -6,7 +6,8 @@ import src.models.train_model as train_model
 import src.models.predict_model as predict_model
 from numpy import arange
 import numpy as np
-import utils
+import os
+import json
 
 
 def setup_parser():
@@ -112,8 +113,15 @@ def main():
     y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
     #y_true_test = np.load('ytruetest.npy')
     #y_pred_test = np.load('ypredtest.npy')
-    print("Train set results: ", " ".join(eval_metric), predict_model.scores(y_pred_train, y_true_train)[eval_metric[0]][eval_metric[1]])
-    print("Test set results: ",  " ".join(eval_metric), predict_model.scores(y_pred_test, y_true_test)[eval_metric[0]][eval_metric[1]])
+    scores_train = predict_model.scores(y_pred_train, y_true_train)
+    print("Train set results: ", " ".join(eval_metric), scores_train[eval_metric[0]][eval_metric[1]])
+    
+    scores_test = predict_model.scores(y_pred_test, y_true_test)
+    print("Test set results: ",  " ".join(eval_metric), scores_test[eval_metric[0]][eval_metric[1]])
+
+    with open(os.path.join(config['model']['directory'], f"model_{config['model']['name']}_scores.json"), 'w') as f:
+        json.dump({'train': scores_train, 'test': scores_test}, f, indent=4)
+
 
 if __name__ == '__main__':
     main()
