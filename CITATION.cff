@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-- family-names: "van den Berg, , , Stuffer"
+- family-names: "van den Berg"
   given-names: "Natasha"
 - family-names: "Hartsuiker"
   given-names: "Jens"
