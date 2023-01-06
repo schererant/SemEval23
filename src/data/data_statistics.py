@@ -44,18 +44,19 @@ def word_counts(dataframe, set, saveto=None):
         fig.savefig(saveto)
 
 
-def word_cloud(dataframe, column, set, saveto=None):
-    words = []
+def word_cloud(dataframe, set, saveto=None):
 
-    for stance in ['in favor of', 'against']:
-        for row in dataframe[dataframe['Stance']==stance][column]:
+    for feature in ['Premise', 'Conclusion']:
+        words = []
+
+        for row in dataframe[dataframe['Usage']==set][feature]:
             words.append(row)
 
         words_string = (" ").join(words)
         words_list = words_string.split()
 
         n = 10
-        print(f"{n} Most frequent words in {set} data ({stance}):")
+        print(f"{n} Most frequent words in {set} data ({feature}):")
         word_frame = pd.DataFrame({"words": words_list})
         print(word_frame.value_counts().index.tolist()[:n])
 
@@ -67,7 +68,7 @@ def word_cloud(dataframe, column, set, saveto=None):
         plt.axis("off")
         if not saveto is None:
             path = str(saveto).rsplit('.', 1)
-            path.insert(-1, '_'+stance+'.')
+            path.insert(-1, '_'+feature+'.')
             plt.savefig(''.join(path))
         plt.show()
 
@@ -107,6 +108,6 @@ if __name__ == '__main__':
     #label_distribution(train_labels, saveto=report_dir/'label_distribution_train.png')
     #stance_distribution(train_frame)
 
-    word_counts(train_frame, 'train', saveto=report_dir/'wordlength_conclusion_premise_train.png')
+    # word_counts(train_frame, 'train', saveto=report_dir/'wordlength_conclusion_premise_train.png')
 
-    #word_cloud(train_frame, 'Premise', 'train', saveto=report_dir/'wordcloud_premise_train.png')
+    word_cloud(train_frame, 'train', saveto=report_dir/'wordcloud_premise_train.png')
