@@ -15,7 +15,7 @@ optimizer:
   scheduler_type: linear
 train:
   always_retrain: False
-  use_mini_dataset: True
+  use_mini_dataset: False
   batch_size: 100
   epochs: 100
   weight_decay: 0.01

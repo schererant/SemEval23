@@ -1,6 +1,7 @@
 .pytest_cache/
 __pycache__/
-models/bert_train
+models/bert_train/config.json
+models/bert_train/pytorch*
 models/backup
 ypred*.npy
 ytrue*.npy
