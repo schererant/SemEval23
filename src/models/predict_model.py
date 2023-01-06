@@ -1,8 +1,6 @@
 import torch
 import numpy as np
 from sklearn.metrics import f1_score, classification_report
-from matplotlib import pyplot as plt
-import math
 
 
 def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):

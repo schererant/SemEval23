@@ -1,9 +1,7 @@
 import torch
 import numpy as np
-from transformers import (AutoTokenizer, AutoModelForSequenceClassification,
-                          PreTrainedModel, DistilBertModel, BertModel, BertForSequenceClassification,
-                          TrainingArguments, Trainer)
-from datasets import (Dataset, DatasetDict, load_dataset)
+from transformers import (AutoTokenizer, TrainingArguments, Trainer)
+from datasets import (Dataset, DatasetDict)
 import utils
 import models.predict_model as predict_model
 from models.model_interface import ModelInterface
@@ -11,8 +9,8 @@ from numpy import arange
 
 
 """
-The folllwoing code is taken from https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/main/src/python/components/models/bert.py
-
+The folllwoing code is adapted from
+https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/main/src/python/components/models/bert.py
 """
 class MultiLabelTrainer(Trainer):
     """
@@ -35,6 +33,7 @@ class MultiLabelTrainer(Trainer):
 
 class BertModel(ModelInterface):
     def __init__(self, config) -> None:
+        # read in config parameters and initialize the TrainerArgument class
         self.name = config['model']['name']
 
         self.model_dir = config['model']['directory']
@@ -66,6 +65,7 @@ class BertModel(ModelInterface):
             per_device_eval_batch_size=config['evaluate']['batch_size']
         )
 
+        # unoptimized threshold
         self.thresh_opt = 0.5
 
     def train(self, train_dataframe, labels, test_dataframe=None):
@@ -75,20 +75,13 @@ class BertModel(ModelInterface):
         ----------
         train_dataframe: pd.DataFrame
             The arguments to be trained on
-        model_dir: str
-            The directory for storing the trained model
         labels : list[str]
             The labels in the training data
         test_dataframe: pd.DataFrame, optional
             The validation arguments (default is None)
-        num_train_epochs: int, optional
-            The number of training epochs (default is 20)
         Returns
         -------
-        Metrics
-            result of validation if `test_dataframe` is not None
         NoneType
-            otherwise
         """
         if test_dataframe is None:
             test_dataframe = train_dataframe
@@ -115,6 +108,7 @@ class BertModel(ModelInterface):
         return self.multi_trainer.evaluate()
 
     def optimize(self, y_pred, y_true, eval_metric):
+        # optimize decission threshold for a given evaluation metric
         print('Optimize threshold on validation data')
         thresholds = list(arange(0, 1.0, 0.01))
         scores = [predict_model.scores((y_pred>=t).astype(np.int64), y_true) for t in thresholds]
@@ -171,10 +165,15 @@ class BertModel(ModelInterface):
             The directory of the pre-trained Bert model to use
         labels: list[str]
             The labels to predict
+        use_threshold: boolean
+            apply decission threshold after prediction or not
         Returns
         -------
-        np.ndarray
-            numpy nd-array with the predictions given by the model
+        Tuple:
+            np.ndarray
+                numpy nd-array with the predictions given by the model
+            np.ndarray
+                numpy nd-array with the true labels
         """
         ds, _ = self.convert_to_dataset(dataframe, dataframe, labels)
         num_labels = len(labels)
