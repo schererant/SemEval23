@@ -19,6 +19,32 @@ def setup_parser():
     return parser
 
 
+def fancy_print_example(row, pred, actual):
+    print("--- Item ---")
+
+    print("Premise:", row['Premise'])
+    print("Stance:", row['Stance'])
+    print("Conclusion:", row['Conclusion'])
+
+    print("Predicted labels:")
+    print(pred)
+    for i in range(20):
+        if pred[i] == 1:
+            print('"' + row.columns[i+5] + '"', end=' ')
+    print()
+
+    print("True labels:")
+    print(actual)
+    for i in range(20):
+        if actual[i] == 1:
+            print('"' + row.columns[i+5] + '"', end=' ')
+    print()
+
+    print("----")
+    print()
+
+
+
 def main():
 
     ### setup argument parser ###
@@ -96,6 +122,12 @@ def main():
     # Evaluate the model after optimization on test set
     print('Run prediction on test set')
     y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+
+    # for i in range(10):
+    #     print(df_test, y_pred_test, y_true_test)
+
+    for i in range(10):
+        fancy_print_example(df_test.loc[[i]], y_pred_test[i], y_true_test[i])
     
     # Compute the scopres and save the to a file for test and training data
     scores_train = predict_model.scores(y_pred_train, y_true_train)
