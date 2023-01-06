@@ -21,7 +21,7 @@ train:
   weight_decay: 0.01
   save_strategy: steps
   save_steps: 20
-  seed: 42
+  seed: 542534
 evaluate:
   split_validation_set: True
   reload_best_model_weights: True
