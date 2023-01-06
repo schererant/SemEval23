@@ -6,9 +6,7 @@ import os
 
 def train(model, config, train_arguments, labels_json, test_arguments):
     # If set, run train procedure on a small subset
-    if config['train']['use_mini_dataset']:
-        train_arguments = train_arguments[:10]
-        test_arguments = test_arguments[:10]
+
     
     print(f"===> Model {model.name}: Training...")
     model.train(train_arguments, labels_json, test_arguments)

@@ -114,10 +114,10 @@ class BertModel(ModelInterface):
         print("Evaluating model")
         return self.multi_trainer.evaluate()
 
-    def optimize(self, y_pred_val, y_true_val, eval_metric):
+    def optimize(self, y_pred, y_true, eval_metric):
         print('Optimize threshold on validation data')
         thresholds = list(arange(0, 1.0, 0.01))
-        scores = [predict_model.scores(y_pred_val, y_true_val, tresh=t) for t in thresholds]
+        scores = [predict_model.scores((y_pred>=t).astype(np.int64), y_true) for t in thresholds]
         idx_opt, max_score = utils.get_opt_th(scores, eval_metric)
         self.thresh_opt = thresholds[idx_opt]
 
@@ -160,7 +160,7 @@ class BertModel(ModelInterface):
         return ds_enc, cols
 
 
-    def predict(self, dataframe, model_dir, labels):
+    def predict(self, dataframe, model_dir, labels, use_threshold=True):
         """
         Classifies each argument using the Bert model stored in `model_dir`
         Parameters
@@ -189,8 +189,10 @@ class BertModel(ModelInterface):
             self.predict_args,
             tokenizer=self.tokenizer
         )
-
-        y_pred = multi_trainer.predict(ds['train']).predictions
+        if use_threshold:
+            y_pred = (predict_model.sigmoid(multi_trainer.predict(ds['train']).predictions) >= self.thresh_opt).astype(np.int64)
+        else:
+            y_pred = predict_model.sigmoid(multi_trainer.predict(ds['train']).predictions)
 
         return y_pred, y_true
 

@@ -1,5 +1,5 @@
 import src.data.make_dataset as md
-from nltk.corpus import stopwords
+import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.multiclass import OneVsRestClassifier
@@ -7,7 +7,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
-from model_interface import ModelInterface
+from src.models.model_interface import ModelInterface
 
 class NBModel(ModelInterface):
     def __init__(self, config):
@@ -16,7 +16,12 @@ class NBModel(ModelInterface):
     def init_pipeline(self):
         """ Initialization pipeline with removing stop words and having a one vs rest classifier.
         """
-        stop_words = list(stopwords.words('english'))
+        try: 
+            nltk.data.find("corpora/stopwords.zip")
+        except LookupError:
+            nltk.download('stopwords')
+
+        stop_words = list(nltk.corpus.stopwords.words('english'))
         return Pipeline([
             ('tfidf', TfidfVectorizer(stop_words=stop_words)),
             ('clf', OneVsRestClassifier(MultinomialNB(
@@ -32,19 +37,20 @@ class NBModel(ModelInterface):
         for label_col in label_columns:
             self.NB_pipelines[label_col].fit(train_frame['Premise'], train_frame[label_col])
 
+
     def predict(self, dataframe, model_dir, labels):
         """Predicting the labels"""
         preds = {}
+
+        y_true = np.asarray(dataframe[labels])
 
         for col in self.label_columns:
             preds[col] = self.NB_pipelines[col].predict(dataframe['Premise'])
 
         pred_df = pd.DataFrame(preds)
 
-        return pred_df
+        return np.asarray(pred_df), y_true
 
-    def optimize(self, y_pred, y_true, eval_metric):
-        pass
 
     def evaluate(self, data_frame):
         """"Evaluating the labels, a small evaluation. """

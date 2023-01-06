@@ -73,6 +73,12 @@ def main():
         df_test = df_validation_test
         df_validation = None
 
+    if config['train']['use_mini_dataset']:
+        df_training   = df_training[:10]
+        df_test       = df_test[:10]
+        if not df_validation is None:
+            df_validation = df_validation[:10]
+
     ### Choose model, throws AttributeError if the model name in the config is invalid ###
     model = train_model.get_model(config)
     
@@ -82,29 +88,32 @@ def main():
     # due to fast training time, the NaiveBayes model is not saved, and thus is always retrained
     if args.retrain or config['train']['always_retrain']:
         print('Train model...')
-        model.train(model, config, df_training, list(labels_json.keys()), df_validation)
-        scores = model.evaluate(model)
+        model.train(df_training, list(labels_json.keys()), df_validation)
     else:
         print('Skip training model (use --retrain to start model training again)')
 
     eval_metric = config['evaluate']['metric_th_opt'].split(':')
 
-    #y_pred_train, y_true_train = model.predict(df_training, config['model']['directory'], list(labels_json.keys()))
-    y_true_train = np.load('ytruetrain.npy')
-    y_pred_train = np.load('ypredtrain.npy')
+    y_pred_train, y_true_train = model.predict(df_training, config['model']['directory'], list(labels_json.keys()))
+    #y_true_train = np.load('ytruetrain.npy')
+    #y_pred_train = np.load('ypredtrain.npy')
 
-    print('Run prediction on validation set')
-    #y_pred_val, y_true_val = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()))
-    y_true_val = np.load('ytrueval.npy')
-    y_pred_val = np.load('ypredval.npy')
+    if not df_validation is None:
+        print('Run prediction on validation set')
+        y_pred_val, y_true_val = model.predict(df_validation, config['model']['directory'], list(labels_json.keys()), use_threshold=False)
+        #y_true_val = np.load('ytrueval.npy')
+        #y_pred_val = np.load('ypredval.npy')
 
-    model.optimize(y_pred_val, y_true_val, eval_metric)
+        # run optimization on validation set, e.g. threshold optimization
+        model.optimize(y_pred_val, y_true_val, eval_metric)
 
-    # Evaluate on test set
-    print('Run prediction on train and test set')
-    #y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
-    y_pred_test = np.load('ypredtest.npy')
-    print("Test set results: ", " ".join(eval_metric), model.scores()[eval_metric[0]][eval_metric[1]])
+    # Evaluate the model after optimization
+    print('Run prediction on test set')
+    y_pred_test, y_true_test = model.predict(df_test, config['model']['directory'], list(labels_json.keys()))
+    #y_true_test = np.load('ytruetest.npy')
+    #y_pred_test = np.load('ypredtest.npy')
+    print("Train set results: ", " ".join(eval_metric), predict_model.scores(y_pred_train, y_true_train)[eval_metric[0]][eval_metric[1]])
+    print("Test set results: ",  " ".join(eval_metric), predict_model.scores(y_pred_test, y_true_test)[eval_metric[0]][eval_metric[1]])
 
 if __name__ == '__main__':
     main()

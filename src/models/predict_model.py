@@ -28,10 +28,8 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def scores(y_pred, y_true, tresh, use_sigmoid=True):
-    if use_sigmoid:
-        y_pred = sigmoid(y_pred)
-    return classification_report(y_true=y_true, y_pred=(y_pred >= tresh).astype(np.int64),
+def scores(y_pred, y_true):
+    return classification_report(y_true=y_true, y_pred=y_pred,
                                     output_dict=True, zero_division=0)
 
 
