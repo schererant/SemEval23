@@ -32,30 +32,30 @@ def main():
     print(f"Run model routine for {model_name} model")
 
 
-    ### Load data (train and validation data) ###
+    ### Load data (train and test data) ###
     labels_json = make_dataset.load_json_file('data/raw/value-categories.json')
 
     df_arguments_training   = make_dataset.load_arguments_from_tsv(config['dataset']['arguments']['train'], default_usage='train')
-    df_arguments_validation = make_dataset.load_arguments_from_tsv(config['dataset']['arguments']['val'],   default_usage='validation')
+    df_arguments_test = make_dataset.load_arguments_from_tsv(config['dataset']['arguments']['val'],   default_usage='validation')
 
     df_labels_training = make_dataset.load_labels_from_tsv(config['dataset']['labels']['train'], list(labels_json.keys()))
-    df_labels_validation = make_dataset.load_labels_from_tsv(config['dataset']['labels']['val'],   list(labels_json.keys()))
+    df_labels_test = make_dataset.load_labels_from_tsv(config['dataset']['labels']['val'],   list(labels_json.keys()))
 
     # join arguments and labels
-    df_training   = format_dataset.combine_columns(df_arguments_training, df_labels_training)
-    df_validation_test = format_dataset.combine_columns(df_arguments_validation, df_labels_validation)
+    df_training_val   = format_dataset.combine_columns(df_arguments_training, df_labels_training)
+    df_test = format_dataset.combine_columns(df_arguments_test, df_labels_test)
 
     # drop usage column
-    df_training   = format_dataset.drop_column(df_training, 'Usage')
-    df_validation_test = format_dataset.drop_column(df_validation_test, 'Usage')
+    df_training_val   = format_dataset.drop_column(df_training_val, 'Usage')
+    df_test = format_dataset.drop_column(df_test, 'Usage')
 
     if config['evaluate']['split_validation_set']:
         # split validation frame into validation and test frame
-        df_validation = df_validation_test.sample(frac=0.67)
-        df_test       = df_validation_test.drop(df_validation.index)
+        df_training   = df_training_val.sample(frac=0.7, random_state=config['train']['seed'])
+        df_validation = df_training_val.drop(df_training.index)
     else:
         # do not use a separate validation set for evaluation
-        df_test = df_validation_test
+        df_training = df_training_val
         df_validation = None
 
     if config['train']['use_mini_dataset']:

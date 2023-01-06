@@ -28,5 +28,5 @@ evaluate:
   strategy: steps
   eval_steps: 10
   batch_size: 1000
-  metric: micro-avg-f1score
-  metric_th_opt: micro avg:f1-score
+  metric: weighted-avg-f1score
+  metric_th_opt: weighted avg:f1-score
