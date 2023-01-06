@@ -12,4 +12,9 @@ model:
   directory: 'models/naive_bayes'
   seed: 42
 evaluate:
-  metric: marco-avg-f1score
+  metric: micro-avg-f1score
+  metric_th_opt: micro avg:f1-score
+  split_validation_set: False
+train:
+  always_retrain: True
+  use_mini_dataset: False

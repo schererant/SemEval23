@@ -1,6 +1,8 @@
 import torch
 import numpy as np
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, classification_report
+from matplotlib import pyplot as plt
+import math
 
 
 def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):
@@ -8,7 +10,7 @@ def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):
     y_pred = torch.from_numpy(y_pred)
     y_true = torch.from_numpy(y_true)
     if sigmoid:
-        y_pred = y_pred.sigmoid()
+        y_pred = y_pred.sigmoid()   
 
     y_true = y_true.bool().numpy()
     y_pred = (y_pred > thresh).numpy()
@@ -20,6 +22,15 @@ def f1_score_per_label(y_pred, y_true, value_classes, thresh=0.5, sigmoid=True):
     f1_scores['avg-f1-score'] = round(np.mean(list(f1_scores.values())), 2)
 
     return f1_scores
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def scores(y_pred, y_true):
+    return classification_report(y_true=y_true, y_pred=y_pred,
+                                    output_dict=True, zero_division=0)
 
 
 def accuracy_thresh(y_pred, y_true, thresh=0.5, sigmoid=True):

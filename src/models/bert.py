@@ -7,6 +7,8 @@ from datasets import (Dataset, DatasetDict, load_dataset)
 import utils
 import models.predict_model as predict_model
 from models.model_interface import ModelInterface
+from numpy import arange
+
 
 """
 The folllwoing code is taken from https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/main/src/python/components/models/bert.py
@@ -64,6 +66,8 @@ class BertModel(ModelInterface):
             per_device_eval_batch_size=config['evaluate']['batch_size']
         )
 
+        self.thresh_opt = 0.5
+
     def train(self, train_dataframe, labels, test_dataframe=None):
         """
         Trains Bert model with the arguments in `train_dataframe`
@@ -110,6 +114,13 @@ class BertModel(ModelInterface):
         print("Evaluating model")
         return self.multi_trainer.evaluate()
 
+    def optimize(self, y_pred, y_true, eval_metric):
+        print('Optimize threshold on validation data')
+        thresholds = list(arange(0, 1.0, 0.01))
+        scores = [predict_model.scores((y_pred>=t).astype(np.int64), y_true) for t in thresholds]
+        idx_opt, max_score = utils.get_opt_th(scores, eval_metric)
+        self.thresh_opt = thresholds[idx_opt]
+
     def convert_to_dataset(self, train_dataframe, test_dataframe, labels):
         """
             Converts pandas DataFrames into a DatasetDict
@@ -149,7 +160,7 @@ class BertModel(ModelInterface):
         return ds_enc, cols
 
 
-    def predict(self, dataframe, model_dir, labels):
+    def predict(self, dataframe, model_dir, labels, use_threshold=True):
         """
         Classifies each argument using the Bert model stored in `model_dir`
         Parameters
@@ -165,8 +176,10 @@ class BertModel(ModelInterface):
         np.ndarray
             numpy nd-array with the predictions given by the model
         """
-        ds, no_labels = self.convert_to_dataset(dataframe, dataframe, labels)
+        ds, _ = self.convert_to_dataset(dataframe, dataframe, labels)
         num_labels = len(labels)
+
+        y_true = np.asarray(ds['train']['labels'])
         ds = ds.remove_columns(['labels'])
 
         model = utils.load_model_from_data_dir(model_dir, num_labels=num_labels)
@@ -176,10 +189,12 @@ class BertModel(ModelInterface):
             self.predict_args,
             tokenizer=self.tokenizer
         )
+        if use_threshold:
+            y_pred = (predict_model.sigmoid(multi_trainer.predict(ds['train']).predictions) >= self.thresh_opt).astype(np.int64)
+        else:
+            y_pred = predict_model.sigmoid(multi_trainer.predict(ds['train']).predictions)
 
-        prediction = 1 * (multi_trainer.predict(ds['train']).predictions > 0.5)
-
-        return prediction
+        return y_pred, y_true
 
     def tokenize_and_encode(self, examples):
         """Tokenizes each arguments "Premise" """
